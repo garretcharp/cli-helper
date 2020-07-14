@@ -1,0 +1,40 @@
+{
+  "name": "gch-cli-init",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard --fix",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garretcharp/cli-helper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/garretcharp/cli-helper/issues"
+  },
+  "homepage": "https://github.com/garretcharp/cli-helper#readme",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^7.4.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "nodemon": "^2.0.4",
+    "standard": "^14.3.4"
+  },
+  "dependencies": {
+    "@hapi/h2o2": "^9.0.1",
+    "@hapi/hapi": "^19.1.1",
+    "@hapi/wreck": "^17.0.0",
+    "hapi-plugin-websocket": "^2.3.0",
+    "ws": "^7.3.1"
+  }
+}

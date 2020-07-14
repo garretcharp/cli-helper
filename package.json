@@ -1,0 +1,24 @@
+{
+  "name": "gch-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garretcharp/cli-helper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/garretcharp/cli-helper/issues"
+  },
+  "homepage": "https://github.com/garretcharp/cli-helper#readme",
+  "dependencies": {
+    "cli-color": "^2.0.0"
+  }
+}
