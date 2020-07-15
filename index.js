@@ -6,7 +6,7 @@ const clc = require("cli-color")
 
 const { hasFlag, initSockets, createMethod, initApi, createRoute, commands, commandCheck } = require("./helpers")
 
-const { dir, arguments, flags, argString, command, validUsage } = commandCheck()
+const { dir, arguments, argString, command, validUsage } = commandCheck()
 
 if (!validUsage) return
 
@@ -14,27 +14,10 @@ if (!validUsage) return
  * INIT APP COMMAND
  */
 
-if (commands.init.triggers.includes(command)) {
-  let ok = true
+else if (commands.init.triggers.includes(command)) {
+  const directory = fs.readdirSync(dir)
 
-  const check = [
-    { loc: "package.json", exist: false }, 
-    { loc: "index.js", exist: false }, 
-    { loc: "/socket", exist: false }, 
-    { loc: "/api", exist: false }, 
-    { loc: "/helpers", exist: false }, 
-    { loc: ".eslintrc.js", exist: true }, 
-    { loc: ".gitignore", exist: true }
-  ].map(({loc, exist}) => {
-      if (fs.existsSync(`${dir}/${loc}`)) {
-        if (ok === true) ok = exist === true
-        return { loc, exists: true, okay: exist === true }
-      } else {
-        return { loc, exists: true, okay: true }
-      }
-    })
-
-  if (ok === false && !hasFlag("force")) 
+  if (directory.length !== 0 && hasFlag("force") === false)
     return console.error(clc.red("Error Project Exists."), `Run "gch-cli ${argString} --force" to force recreation.`, clc.red("\nWarning! This will overwrite your project files."))
 
   const create = fs.readdirSync(path.join(__dirname, "/files")).map(file => ({ file, name: file.replace(/-/g, "/") }))
@@ -43,7 +26,7 @@ if (commands.init.triggers.includes(command)) {
   fs.mkdirSync(`${dir}/helpers`, { recursive: true })
   fs.mkdirSync(`${dir}/api`, { recursive: true })
 
-  create.forEach(({file, name}) => {
+  create.forEach(({ file, name }) => {
     fs.writeFileSync(`${dir}/${name}`, fs.readFileSync(path.join(__dirname, `/files/${file}`)), { recursive: true })
   })
 
@@ -56,27 +39,25 @@ if (commands.init.triggers.includes(command)) {
  * SOCKET METHOD COMMAND
  */
 
-const overwriteSocket = clc.red("\nWarning! This will overwrite your socket files.")
-
-if (commands.socket.triggers.includes(command)) {
+else if (commands.socket.triggers.includes(command)) {
   const action = arguments[1]
 
-  const socketExists = fs.existsSync(`${dir}/socket`)
+  // Initialize Default Socket Structure
+  if (action === "init") {
+    const socketExists = fs.existsSync(`${dir}/socket`)
 
-  if (socketExists === false || action === "init") {
-    if (action !== "init" && !hasFlag("force"))
-      return console.error(clc.red("Error Socket Folder Doesn't Exists."), `Run "gch-cli ${argString} --force" to force creation.`)
-    else if (socketExists && action === "init") 
-      return console.error(clc.red("Error Socket Folder Exists."), `Run "gch-cli ${argString} --force" to force recreation.`, overwriteSocket)
+    if (socketExists === true && hasFlag("force") === false)
+      return console.error(clc.red("Error Socket Folder Exists."), `Run "gch-cli ${argString} --force" to force recreation.`, clc.red("\nWarning! This will overwrite your socket files."))
 
-    initSockets()
-
-    if (action === "init") return
+    return initSockets()
   }
 
-  if (fs.existsSync(`${dir}/socket/methods`) === false) {
-    if (!hasFlag("force"))
-      return console.error(clc.red("Error Socket Methods Folder Doesn't Exists."), `Run "gch-cli ${argString} --force" to force creation.`, overwriteSocket)
+  const methodsExists = fs.existsSync(`${dir}/socket/methods`)
+
+  // Initialize Default Socket Structure -- If Not Exists && Forceful
+  if (methodsExists === false) {
+    if (hasFlag("force") === false)
+      return console.error(clc.red("Error Socket Methods Folder Doesn't Exists."), `Run "gch-cli ${argString} --force" to force creation.`)
 
     initSockets()
   }
@@ -88,22 +69,25 @@ if (commands.socket.triggers.includes(command)) {
  * API ROUTE COMMAND
  */
 
-const overwriteApi = clc.red("\nWarning! This will overwrite your api files.")
-
-if (commands.api.triggers.includes(command)) {
+else if (commands.api.triggers.includes(command)) {
   const action = arguments[1]
 
   const apiExists = fs.existsSync(`${dir}/api`)
 
-  if (apiExists === false || action === "init") {
-    if (action !== "init" && !hasFlag("force"))
+  // Initialize Default API Structure
+  if (action === "init") {
+    if (apiExists === true && hasFlag("force") === false)
+      return console.error(clc.red("Error API Folder Exists."), `Run "gch-cli ${argString} --force" to force recreation.`, clc.red("\nWarning! This will overwrite your socket files."))
+
+    return initApi()
+  }
+
+  // Initialize Default API Structure -- If Not Exists && Forceful
+  if (apiExists === false) {
+    if (hasFlag("force") === false)
       return console.error(clc.red("Error API Folder Doesn't Exists."), `Run "gch-cli ${argString} --force" to force creation.`)
-    else if (apiExists && action === "init") 
-      return console.error(clc.red("Error API Folder Exists."), `Run "gch-cli ${argString} --force" to force recreation.`, overwriteSocket)
 
     initApi()
-
-    if (action === "init") return
   }
 
   return createRoute(action)

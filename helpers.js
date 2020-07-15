@@ -4,7 +4,10 @@ const clc = require("cli-color")
 
 const dir = process.cwd()
 
+let result = null
 const run = () => {
+  if (result !== null) return result // small cache no need to run this over & over
+
   const all = process.argv.slice(2)
 
   const arguments = all.filter(arg => !arg.startsWith("-"))
@@ -14,13 +17,15 @@ const run = () => {
 
   const command = arguments.length !== 0 ? arguments[0] : null
 
-  return {
+  result = {
     dir,
     arguments,
     flags,
     argString,
     command
   }
+
+  return result
 }
 
 const flags = {
@@ -41,10 +46,12 @@ const initSockets = () => {
 }
 
 const createMethod = name => {
-  if (fs.existsSync(`${dir}/socket/methods/${name}.js`) === true && !hasFlag("force"))
+  if (fs.existsSync(`${dir}/socket/methods/${name}.js`) === true && hasFlag("force") === false)
     return console.error(clc.red("Warning Method Already Exists"), `Run "gch-cli ${process.argv.slice(2).join(" ")} --force" to force creation\n`, clc.red("Warning! This will overwrite your method."))
 
   fs.writeFileSync(`${dir}/socket/methods/${name}.js`, fs.readFileSync(path.join(__dirname, "/files/socket-methods-test.js")))
+
+  // TODO: Attempt to modify the imports of the index file with the required method.
 
   console.log(clc.green(`Initialized method ${name}...`))
 }
@@ -59,10 +66,12 @@ const initApi = () => {
 }
 
 const createRoute = name => {
-  if (fs.existsSync(`${dir}/api/${name}.js`) === true && !hasFlag("force"))
+  if (fs.existsSync(`${dir}/api/${name}.js`) === true && hasFlag("force") === false)
     return console.error(clc.red("Warning Route Already Exists"), `Run "gch-cli ${process.argv.slice(2).join(" ")} --force" to force creation\n`, clc.red("Warning! This will overwrite your route."))
 
   fs.writeFileSync(`${dir}/api/${name}.js`, fs.readFileSync(path.join(__dirname, "/files/api-test.js")))
+
+  // TODO: Attempt to modify the imports of the index file with the required routes.
 
   console.log(clc.green(`Initialized route ${name}...`))
 }
@@ -80,7 +89,7 @@ const commands = {
     usage: "gch-cli socket <method name || init>",
     argMin: 2
   },
-  api : {
+  api: {
     triggers: ["api", "a"],
     desc: "Used to create a api server route.",
     usage: "gch-cli api <api route || init>",
@@ -106,7 +115,7 @@ const commandCheck = () => {
       return { ...vals, validUsage }
     }
   }
-  
+
 
   console.error(clc.red("Error Command:"), `"gch-cli ${argString}"`, clc.red("Does not exists."), `\n${JSON.stringify(commands, null, 2)}`) // TODO: make this nice?
   return { ...vals, validUsage: false }
